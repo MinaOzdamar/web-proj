@@ -1,0 +1,91 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>IDontEvenKnow</title>
+    <link rel="stylesheet" href="{% static 'cores/styles.css' %}">
+    <style>
+        .nav {
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: transparent;
+            box-shadow: none;
+            border-bottom: none;
+        }
+
+        .welcome-text {
+            color: #A67B5B;
+            font-size: 1.1rem;
+        }
+
+        .logout-link {
+            color: #A67B5B;
+            text-decoration: none;
+        }
+
+        .logout-link:hover {
+            text-decoration: underline;
+        }
+
+        .nav-link {
+            color: #A67B5B !important;
+            background: transparent;
+            text-decoration: none;
+            padding: 0;
+            border-radius: 0;
+            font-weight: 600;
+            font-size: 1.05em;
+            margin: 0;
+            display: inline;
+            border: none;
+            transition: color 0.2s;
+        }
+
+        .nav-link:hover,
+        .nav-link:active,
+        .nav-link:focus {
+            color: #A67B5B !important;
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="nav" style="background:transparent;box-shadow:none;border-bottom:none;">
+        {% if user.is_authenticated %}
+            <div class="nav-left"></div>
+            <div class="nav-right" style="display:flex;gap:1rem;align-items:center;">
+                <span style="background:#fff;padding:0.5rem 1.1rem;border-radius:16px;box-shadow:0 2px 8px rgba(0,0,0,0.06);display:flex;align-items:center;font-weight:600;color:#A67B5B;font-size:1.05em;">
+                    {{ user.username }}
+                </span>
+                <span style="background:#fff;padding:0.5rem 1.1rem;border-radius:16px;box-shadow:0 2px 8px rgba(0,0,0,0.06);display:flex;align-items:center;">
+                    <a href="{% url 'logout' %}" class="nav-link">Log out</a>
+                </span>
+            </div>
+        {% else %}
+            <div class="nav-left"></div>
+            <div class="nav-right" style="display:flex;gap:1rem;">
+                <span style="background:#fff;padding:0.5rem 1.1rem;border-radius:16px;box-shadow:0 2px 8px rgba(0,0,0,0.06);display:flex;align-items:center;">
+                    <a href="{% url 'login' %}" class="nav-link">Log in</a>
+                </span>
+                <span style="background:#fff;padding:0.5rem 1.1rem;border-radius:16px;box-shadow:0 2px 8px rgba(0,0,0,0.06);display:flex;align-items:center;">
+                    <a href="{% url 'signup' %}" class="nav-link">Sign up</a>
+                </span>
+            </div>
+        {% endif %}
+    </div>
+    <div class="container">
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>

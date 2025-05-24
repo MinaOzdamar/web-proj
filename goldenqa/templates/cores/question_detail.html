@@ -1,0 +1,215 @@
+{% extends 'cores/base.html' %}
+
+{% block content %}
+<style>
+    .container {
+        max-width: 800px;
+        margin: auto;
+        padding: 2rem 1rem;
+        font-family: 'Inter', sans-serif;
+    }
+
+    .question-box {
+        background: #f9f9f9;
+        padding: 2rem;
+        border-radius: 10px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+        margin-bottom: 2rem;
+    }
+
+    .question-box h2 {
+        font-size: 1.75rem;
+        margin-bottom: 1rem;
+        color: #222;
+    }
+
+    .form-section {
+        background: #ffffff;
+        padding: 2rem;
+        border: 1px solid #e0e0e0;
+        border-radius: 10px;
+        margin-bottom: 3rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+    }
+
+    .form-section h3 {
+        margin-bottom: 1rem;
+        color: #333;
+    }
+
+    .form-section form {
+        margin-top: 1rem;
+    }
+
+    .form-section button {
+        background-color: #28a745;
+        color: white;
+        border: none;
+        padding: 0.7rem 1.5rem;
+        border-radius: 6px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .form-section button:hover {
+        background-color: #218838;
+    }
+
+    .answers-section h3 {
+        margin-bottom: 1rem;
+        color: #333;
+    }
+
+    .answer-card {
+        background: #fff;
+        border: 1px solid #ddd;
+        border-left: 4px solid #28a745;
+        padding: 1rem 1.5rem;
+        border-radius: 8px;
+        margin-bottom: 1.5rem;
+        position: relative;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+    }
+
+    .vote-btn {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin: 0 8px 0 0;
+        user-select: none;
+    }
+
+    .vote-btn.upvoted {
+        color: #28a745;
+        font-weight: bold;
+    }
+
+    .vote-btn.downvoted {
+        color: #dc3545;
+        font-weight: bold;
+    }
+
+    .vote-container {
+        margin-top: 0.75rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 1rem;
+        color: #555;
+    }
+
+    .vote-score {
+        font-weight: bold;
+        color: #333;
+        margin-left: 16px;
+        min-width: 80px;
+    }
+</style>
+
+<div class="container">
+
+    <!-- Soru -->
+    <div class="question-box">
+        <h2>❓ {{ question.text }}</h2>
+    </div>
+
+    <!-- Cevap Formu -->
+    <div class="form-section">
+        <h3>💬 Add Your Answer</h3>
+        <form method="post" id="answer-form">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Submit Answer</button>
+        </form>
+    </div>
+
+    <!-- Cevaplar -->
+    <div class="answers-section">
+        <h3>🗨️ Answers</h3>
+        {% for a in answers %}
+            <div class="answer-card" id="answer-{{ a.id }}">
+                <p>{{ a.content }}</p>
+                <div class="vote-container">
+                    <button class="vote-btn {% if a.id in user_upvotes %}upvoted{% endif %}"
+                            onclick="voteAnswer({{ a.id }}, 'upvote')" title="Upvote">⬆️</button>
+                    <span id="upvotes-{{ a.id }}">{{ a.upvotes.count }}</span>
+
+                    <button class="vote-btn {% if a.id in user_downvotes %}downvoted{% endif %}"
+                            onclick="voteAnswer({{ a.id }}, 'downvote')" title="Downvote">⬇️</button>
+                    <span id="downvotes-{{ a.id }}">{{ a.downvotes.count }}</span>
+
+                    <span id="score-{{ a.id }}" class="vote-score">Score: {{ a.vote_score }}</span>
+                </div>
+            </div>
+        {% empty %}
+            <p style="color: #777;">There are no answers yet. Be the first to help!</p>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let cookie of cookies) {
+            cookie = cookie.trim();
+            if (cookie.startsWith(name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+function voteAnswer(answerId, action) {
+    fetch(`/vote-answer/${answerId}/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken'),
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: new URLSearchParams({ 'action': action })
+    })
+    .then(response => {
+        if (!response.ok) {
+            if(response.status === 403) {
+                alert("You must be logged in to vote.");
+            } else {
+                alert("An error occurred.");
+            }
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        // Update score and counts
+        document.getElementById(`score-${answerId}`).textContent = 'Score: ' + data.score;
+        document.getElementById(`upvotes-${answerId}`).textContent = data.upvotes;
+        document.getElementById(`downvotes-${answerId}`).textContent = data.downvotes;
+
+        // Update button styles
+        const answerCard = document.getElementById(`answer-${answerId}`);
+        const voteBtns = answerCard.querySelectorAll('.vote-btn');
+        const upvoteBtn = voteBtns[0];
+        const downvoteBtn = voteBtns[1];
+
+        if (data.user_vote === 'upvote') {
+            upvoteBtn.classList.add('upvoted');
+            downvoteBtn.classList.remove('downvoted');
+        } else if (data.user_vote === 'downvote') {
+            downvoteBtn.classList.add('downvoted');
+            upvoteBtn.classList.remove('upvoted');
+        } else {
+            upvoteBtn.classList.remove('upvoted');
+            downvoteBtn.classList.remove('downvoted');
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+</script>
+{% endblock %}

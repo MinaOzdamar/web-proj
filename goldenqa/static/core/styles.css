@@ -1,0 +1,33 @@
+body {
+    font-family: 'Georgia', serif;
+    background-color: #fff8e1;
+    color: #4a3f35;
+    padding: 2rem;
+}
+
+.nav {
+    background-color: #d4af37;
+    padding: 1rem;
+    color: white;
+    text-align: right;
+}
+
+a {
+    color: #7d6608;
+    font-weight: bold;
+}
+
+button {
+    background-color: #d4af37;
+    border: none;
+    color: white;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.container {
+    background-color: #fffaf0;
+    padding: 2rem;
+    border-radius: 10px;
+}
