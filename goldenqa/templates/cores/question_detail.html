@@ -2,39 +2,68 @@
 
 {% block content %}
 <style>
+
+    .top-left-buttons {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        display: flex;
+        gap: 10px;
+        z-index: 9999;
+    }
+
+    .top-left-buttons a {
+        background: #a9754a;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 1rem;
+        text-decoration: none;
+        box-shadow: 0 3px 7px rgba(169, 117, 74, 0.6);
+        transition: background-color 0.3s ease;
+    }
+
+    .top-left-buttons a:hover {
+        background: #8c633a;
+    }
+
+
     .container {
         max-width: 800px;
         margin: auto;
         padding: 2rem 1rem;
         font-family: 'Inter', sans-serif;
+        background-color: #f5efe6;
+        color: #5b3a29;
     }
 
     .question-box {
-        background: #f9f9f9;
+        background: #e8d8c3;
         padding: 2rem;
         border-radius: 10px;
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+        box-shadow: 0 4px 16px rgba(91, 58, 41, 0.1);
         margin-bottom: 2rem;
     }
 
     .question-box h2 {
         font-size: 1.75rem;
         margin-bottom: 1rem;
-        color: #222;
+        color: #4a2f1b;
     }
 
     .form-section {
-        background: #ffffff;
+        background: #fff8f0;
         padding: 2rem;
-        border: 1px solid #e0e0e0;
+        border: 1px solid #d7c4b3;
         border-radius: 10px;
         margin-bottom: 3rem;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+        box-shadow: 0 4px 12px rgba(91, 58, 41, 0.08);
     }
 
     .form-section h3 {
         margin-bottom: 1rem;
-        color: #333;
+        color: #5b3a29;
     }
 
     .form-section form {
@@ -42,7 +71,7 @@
     }
 
     .form-section button {
-        background-color: #28a745;
+        background-color: #a9754a;
         color: white;
         border: none;
         padding: 0.7rem 1.5rem;
@@ -53,23 +82,24 @@
     }
 
     .form-section button:hover {
-        background-color: #218838;
+        background-color: #8c633a;
     }
 
     .answers-section h3 {
         margin-bottom: 1rem;
-        color: #333;
+        color: #5b3a29;
     }
 
     .answer-card {
-        background: #fff;
-        border: 1px solid #ddd;
-        border-left: 4px solid #28a745;
+        background: #fff8f0;
+        border: 1px solid #d7c4b3;
+        border-left: 4px solid #a9754a;
         padding: 1rem 1.5rem;
         border-radius: 8px;
         margin-bottom: 1.5rem;
         position: relative;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+        box-shadow: 0 4px 12px rgba(91, 58, 41, 0.04);
+        color: #5b3a29;
     }
 
     .vote-btn {
@@ -80,15 +110,16 @@
         transition: all 0.3s ease;
         margin: 0 8px 0 0;
         user-select: none;
+        color: #7f5c3b;
     }
 
     .vote-btn.upvoted {
-        color: #28a745;
+        color: #a9754a;
         font-weight: bold;
     }
 
     .vote-btn.downvoted {
-        color: #dc3545;
+        color: #b35e38;
         font-weight: bold;
     }
 
@@ -98,25 +129,28 @@
         align-items: center;
         gap: 8px;
         font-size: 1rem;
-        color: #555;
+        color: #6b4b34;
     }
 
     .vote-score {
         font-weight: bold;
-        color: #333;
+        color: #4a2f1b;
         margin-left: 16px;
         min-width: 80px;
     }
 </style>
 
-<div class="container">
+<!-- Butonlar -->
+<div class="top-left-buttons">
+    <a href="{% url 'home' %}">Home</a>
+    <a href="{% url 'question_page' %}">All Questions</a>
+</div>
 
-    <!-- Soru -->
+<div class="container">
     <div class="question-box">
         <h2>❓ {{ question.text }}</h2>
     </div>
 
-    <!-- Cevap Formu -->
     <div class="form-section">
         <h3>💬 Add Your Answer</h3>
         <form method="post" id="answer-form">
@@ -126,27 +160,30 @@
         </form>
     </div>
 
-    <!-- Cevaplar -->
     <div class="answers-section">
         <h3>🗨️ Answers</h3>
         {% for a in answers %}
-            <div class="answer-card" id="answer-{{ a.id }}">
-                <p>{{ a.content }}</p>
-                <div class="vote-container">
-                    <button class="vote-btn {% if a.id in user_upvotes %}upvoted{% endif %}"
-                            onclick="voteAnswer({{ a.id }}, 'upvote')" title="Upvote">⬆️</button>
-                    <span id="upvotes-{{ a.id }}">{{ a.upvotes.count }}</span>
+    <div class="answer-card" id="answer-{{ a.id }}">
+        <p>{{ a.content }}</p>
+        <div style="font-size: 0.85rem; color: #7f5c3b; margin-bottom: 0.5rem;">
+            By <strong>{{ a.user.username }}</strong> | {{ a.created_at|date:"M d, Y H:i" }}
+        </div>
+        <div class="vote-container">
+            <button class="vote-btn {% if a.id in user_upvotes %}upvoted{% endif %}"
+                    onclick="voteAnswer({{ a.id }}, 'upvote')" title="Upvote">⬆️</button>
+            <span id="upvotes-{{ a.id }}">{{ a.upvotes.count }}</span>
 
-                    <button class="vote-btn {% if a.id in user_downvotes %}downvoted{% endif %}"
-                            onclick="voteAnswer({{ a.id }}, 'downvote')" title="Downvote">⬇️</button>
-                    <span id="downvotes-{{ a.id }}">{{ a.downvotes.count }}</span>
+            <button class="vote-btn {% if a.id in user_downvotes %}downvoted{% endif %}"
+                    onclick="voteAnswer({{ a.id }}, 'downvote')" title="Downvote">⬇️</button>
+            <span id="downvotes-{{ a.id }}">{{ a.downvotes.count }}</span>
 
-                    <span id="score-{{ a.id }}" class="vote-score">Score: {{ a.vote_score }}</span>
-                </div>
-            </div>
-        {% empty %}
-            <p style="color: #777;">There are no answers yet. Be the first to help!</p>
-        {% endfor %}
+            <span id="score-{{ a.id }}" class="vote-score">Score: {{ a.vote_score }}</span>
+        </div>
+    </div>
+{% empty %}
+    <p style="color: #9c7d63;">There are no answers yet. Be the first to help!</p>
+{% endfor %}
+
     </div>
 </div>
 
@@ -187,12 +224,10 @@ function voteAnswer(answerId, action) {
         return response.json();
     })
     .then(data => {
-        // Update score and counts
         document.getElementById(`score-${answerId}`).textContent = 'Score: ' + data.score;
         document.getElementById(`upvotes-${answerId}`).textContent = data.upvotes;
         document.getElementById(`downvotes-${answerId}`).textContent = data.downvotes;
 
-        // Update button styles
         const answerCard = document.getElementById(`answer-${answerId}`);
         const voteBtns = answerCard.querySelectorAll('.vote-btn');
         const upvoteBtn = voteBtns[0];

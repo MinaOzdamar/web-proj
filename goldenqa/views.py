@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Question, Answer, Upvote, Downvote
+from .models import Question, Answer, Upvote, Downvote, TAG_CHOICES
 from .forms import QuestionForm, AnswerForm, SignUpForm
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, HttpResponseForbidden
@@ -21,20 +21,9 @@ def signup(request):
     return render(request, 'cores/signup.html', {'form': form})
 
 def home(request):
-    all_tags = dict(Question.TAG_CHOICES)
-    selected_tag = request.GET.get('tag')
-
-    if selected_tag:
-        questions = Question.objects.filter(tag=selected_tag).annotate(
-            like_count=Count('likes'),
-            dislike_count=Count('dislikes')
-        ).annotate(
-            total_votes=F('like_count') + F('dislike_count')
-        ).order_by('-total_votes', '-created_at')
-    else:
-        questions = None
-
+    all_tags = dict(TAG_CHOICES)
     login_warning = None
+
     if request.method == 'POST':
         if not request.user.is_authenticated:
             form = QuestionForm(request.POST)
@@ -50,13 +39,10 @@ def home(request):
         form = QuestionForm()
 
     return render(request, 'cores/home.html', {
-        'questions': questions,
         'form': form,
         'all_tags': all_tags,
-        'selected_tag': selected_tag,
         'login_warning': login_warning
     })
-
 
 def question_detail(request, pk):
     question = get_object_or_404(Question, pk=pk)
@@ -253,3 +239,19 @@ def dislike_question(request, question_id):
     dislikes_count = QuestionDislike.objects.filter(question=question).count()
 
     return JsonResponse({'likes': likes_count, 'dislikes': dislikes_count})
+
+
+def question_page(request):
+    selected_tag = request.GET.get('tag', '')
+    if selected_tag:
+        questions = Question.objects.filter(tag=selected_tag)
+    else:
+        questions = Question.objects.all()
+
+    context = {
+        'questions': questions,
+        'tags': TAG_CHOICES,
+        'selected_tag': selected_tag,
+    }
+    return render(request, 'cores/question_page.html', context)
+

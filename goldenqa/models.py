@@ -3,25 +3,27 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 import datetime
 
+TAG_CHOICES = [
+    ('daily_life', 'Daily Life'),
+    ('sports', 'Sports'),
+    ('hobbies', 'Hobbies'),
+    ('technology', 'Technology'),
+    ('education_career', 'Education and Career'),
+    ('health_fitness', 'Health and Fitness'),
+    ('travel', 'Travel'),
+    ('entertainment', 'Entertainment'),
+    ('food_cooking', 'Food and Cooking'),
+    ('music_arts', 'Music and Arts'),
+    ('books_literature', 'Books and Literature'),
+    ('relationships', 'Relationships'),
+    ('gaming', 'Gaming'),
+    ('science_nature', 'Science and Nature'),
+    ('philosophy', 'Philosophy'),
+    ('other', 'Other'),
+]
+
 class Question(models.Model):
-    TAG_CHOICES = [
-        ('daily_life', 'Daily Life'),
-        ('sports', 'Sports'),
-        ('hobbies', 'Hobbies'),
-        ('technology', 'Technology'),
-        ('education_career', 'Education and Career'),
-        ('health_fitness', 'Health and Fitness'),
-        ('travel', 'Travel'),
-        ('entertainment', 'Entertainment'),
-        ('food_cooking', 'Food and Cooking'),
-        ('music_arts', 'Music and Arts'),
-        ('books_literature', 'Books and Literature'),
-        ('relationships', 'Relationships'),
-        ('gaming', 'Gaming'),
-        ('science_nature', 'Science and Nature'),
-        ('philosophy', 'Philosophy'),
-        ('other', 'Other'),
-    ]
+
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     text = models.TextField()

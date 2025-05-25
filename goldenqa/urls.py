@@ -17,5 +17,7 @@ urlpatterns = [
     path('vote-answer/<int:answer_id>/', views.vote_answer, name='vote_answer'),
     path('questions/<int:question_id>/like/', views.like_question, name='like_question'),
     path('questions/<int:question_id>/dislike/', views.dislike_question, name='dislike_question'),
+    path('questions/', views.question_page, name='question_page'),
+
 ]
 

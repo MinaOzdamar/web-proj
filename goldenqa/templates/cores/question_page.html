@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>All Questions</title>
+    <style>
+        /* Sol üst köşedeki butonlar için stil */
+        .top-left-buttons {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 9999;
+        }
+
+        .top-left-buttons a {
+            background: #7b5e57;
+            color: #f4ede6;
+            padding: 0.55rem 1.2rem;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 1rem;
+            text-decoration: none;
+            box-shadow: 0 4px 10px rgba(123, 94, 87, 0.4);
+            transition: background-color 0.3s ease;
+        }
+
+        .top-left-buttons a:hover {
+            background: #a67b5b;
+        }
+
+        body {
+            background: #f3ede7;
+            color: #4b3621;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        h1 {
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            font-size: 2.5rem;
+            letter-spacing: 1.5px;
+            text-shadow: 1px 1px 2px #a67c00;
+        }
+
+        form {
+            margin-bottom: 2rem;
+            background-color: #7c5e3e;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        label {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: #f5f0e6;
+        }
+
+        select {
+            font-size: 1rem;
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            border: none;
+            background-color: #f3ede7;
+            color: #4b3621;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            min-width: 180px;
+        }
+
+        select:hover, select:focus {
+            background-color: #e6d7b9;
+            outline: none;
+        }
+
+        ul {
+            list-style: none;
+            padding-left: 0;
+            width: 100%;
+            max-width: 700px;
+        }
+
+        li {
+            background-color: #d9c9b8;
+            margin-bottom: 0.8rem;
+            padding: 0.9rem 1.3rem;
+            border-radius: 8px;
+            box-shadow: inset 2px 2px 5px #a67c00;
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #3e2f1c;
+            transition: background-color 0.2s ease;
+        }
+
+        li:hover {
+            background-color: #c1ab7a;
+            cursor: pointer;
+        }
+
+        li a {
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        /* Yeni: soru altı bilgi stili */
+        li .question-meta {
+            font-size: 0.85rem;
+            color: #6b5841;
+            margin-top: 0.3rem;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="top-left-buttons">
+        <a href="{% url 'home' %}">Home</a>
+        <a href="{% url 'question_page' %}">All Questions</a>
+    </div>
+
+    <h1>All Questions</h1>
+
+    <form method="get" action="{% url 'question_page' %}">
+        <label for="tag">Tags:</label>
+        <select name="tag" id="tag" onchange="this.form.submit()">
+            <option value="" {% if not selected_tag %}selected{% endif %}>-- All --</option>
+            {% for code, display in tags %}
+                <option value="{{ code }}" {% if code == selected_tag %}selected{% endif %}>{{ display }}</option>
+            {% endfor %}
+        </select>
+    </form>
+
+    <ul>
+        {% for question in questions %}
+            <li>
+                <a href="{% url 'question_detail' question.id %}">{{ question.text }}</a>
+                <div class="question-meta">
+                    By <strong>{{ question.user.username }}</strong> | {{ question.created_at|date:"M d, Y" }}
+                </div>
+            </li>
+        {% empty %}
+            <li>No questions found for this category.</li>
+        {% endfor %}
+    </ul>
+
+</body>
+</html>
