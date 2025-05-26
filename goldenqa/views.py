@@ -51,7 +51,7 @@ def question_detail(request, pk):
     if not user.is_authenticated:
         return render(request, 'cores/must_login.html')
 
-    #Order
+  
     answers = question.answers.annotate(
         upvote_count=Count('upvote_set'),
         downvote_count=Count('downvote_set')
@@ -92,20 +92,20 @@ def question_detail(request, pk):
 @login_required
 def upvote_answer(request, answer_id):
     if request.method != 'POST':
-        return HttpResponseForbidden()  # Sadece POST kabul et
+        return HttpResponseForbidden()  
 
     answer = get_object_or_404(Answer, id=answer_id)
     user = request.user
 
-    # Eğer daha önce downvote yapmışsa, onu kaldır
+
     Downvote.objects.filter(answer=answer, user=user).delete()
 
-    # Toggle upvote: varsa kaldır yoksa ekle
+
     upvote, created = Upvote.objects.get_or_create(answer=answer, user=user)
     if not created:
         upvote.delete()
 
-    # Güncel sayıları döndür
+ 
     upvotes_count = Upvote.objects.filter(answer=answer).count()
     downvotes_count = Downvote.objects.filter(answer=answer).count()
     vote_score = upvotes_count - downvotes_count
@@ -125,10 +125,10 @@ def downvote_answer(request, answer_id):
     answer = get_object_or_404(Answer, id=answer_id)
     user = request.user
 
-    # Eğer daha önce upvote yapmışsa kaldır
+
     Upvote.objects.filter(answer=answer, user=user).delete()
 
-    # Toggle downvote
+
     downvote, created = Downvote.objects.get_or_create(answer=answer, user=user)
     if not created:
         downvote.delete()
@@ -211,12 +211,12 @@ def like_question(request, question_id):
     question = get_object_or_404(Question, id=question_id)
     user = request.user
 
-    # Eğer dislike varsa sil
+
     QuestionDislike.objects.filter(question=question, user=user).delete()
 
     like, created = QuestionLike.objects.get_or_create(question=question, user=user)
     if not created:
-        like.delete()  # toggle off
+        like.delete() 
 
     likes_count = QuestionLike.objects.filter(question=question).count()
     dislikes_count = QuestionDislike.objects.filter(question=question).count()
