@@ -161,31 +161,37 @@
     justify-content: center;
   }
 
-  .tag-button {
-    padding: 0.45rem 1.1rem;
-    background-color: #d7c9b6;
-    border-radius: 14px;
-    font-weight: 600;
-    font-size: 0.92rem;
-    color: #5a4236;
-    text-decoration: none;
-    border: 2px solid transparent;
-    transition: all 0.25s ease;
-    box-shadow: 0 2px 6px rgba(123, 94, 87, 0.2);
-  }
+.tag-button {
+  width: 130px;
+  height: 130px;
+  background-color: #d7c9b6;
+  border-radius: 0;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #5a4236;
+  text-decoration: none;
+  border: 3px solid transparent;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(123, 94, 87, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0;
+}
 
-  .tag-button:hover {
-    background-color: #a67b5b;
-    color: #f4ede6;
-  }
 
-  .tag-button.active {
-    background-color: #7b5e57;
-    color: #f4ede6;
-    border-color: #a67b5b;
-    box-shadow: 0 0 12px #a67b5b;
-  }
+.tag-button:hover {
+  background-color: #a67b5b;
+  color: #f4ede6;
+}
 
+.tag-button.active {
+  background-color: #7b5e57;
+  color: #f4ede6;
+  border-color: #a67b5b;
+  box-shadow: 0 0 16px #a67b5b;
+}
 
   .questions-section {
     background: #fef9f4;

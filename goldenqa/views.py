@@ -241,17 +241,30 @@ def dislike_question(request, question_id):
     return JsonResponse({'likes': likes_count, 'dislikes': dislikes_count})
 
 
+from django.db.models import Count
+
 def question_page(request):
     selected_tag = request.GET.get('tag', '')
+    sort = request.GET.get('sort', 'new')
+
     if selected_tag:
         questions = Question.objects.filter(tag=selected_tag)
     else:
         questions = Question.objects.all()
 
+
+    if sort == 'best':
+
+        questions = questions.annotate(num_answers=Count('answers')).order_by('-num_answers', '-created_at')
+    else:
+
+        questions = questions.order_by('-created_at')
+
     context = {
         'questions': questions,
         'tags': TAG_CHOICES,
         'selected_tag': selected_tag,
+        'sort': sort,
     }
     return render(request, 'cores/question_page.html', context)
 

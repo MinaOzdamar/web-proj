@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>All Questions</title>
     <style>
-        /* Sol üst köşedeki butonlar için stil */
+
         .top-left-buttons {
             position: fixed;
             top: 20px;
@@ -115,7 +115,7 @@
             display: block;
         }
 
-        /* Yeni: soru altı bilgi stili */
+
         li .question-meta {
             font-size: 0.85rem;
             color: #6b5841;
@@ -133,20 +133,39 @@
 
     <h1>All Questions</h1>
 
-    <form method="get" action="{% url 'question_page' %}">
-        <label for="tag">Tags:</label>
-        <select name="tag" id="tag" onchange="this.form.submit()">
-            <option value="" {% if not selected_tag %}selected{% endif %}>-- All --</option>
-            {% for code, display in tags %}
-                <option value="{{ code }}" {% if code == selected_tag %}selected{% endif %}>{{ display }}</option>
-            {% endfor %}
-        </select>
-    </form>
+   <form method="get" action="{% url 'question_page' %}" style="display: flex; align-items: center; gap: 1rem; background-color: #7c5e3e; padding: 1rem 1.5rem; border-radius: 12px; box-shadow: 0 3px 6px rgba(0,0,0,0.1); max-width: 700px; margin-bottom: 2rem;">
+    <label for="tag" style="color: #f5f0e6; font-weight: 600; font-size: 1.1rem;">Tags:</label>
+    <select name="tag" id="tag" onchange="this.form.submit()" style="font-size: 1rem; padding: 0.4rem 0.8rem; border-radius: 6px; border: none; background-color: #f3ede7; color: #4b3621; cursor: pointer; min-width: 180px;">
+        <option value="" {% if not selected_tag %}selected{% endif %}>-- All --</option>
+        {% for code, display in tags %}
+            <option value="{{ code }}" {% if code == selected_tag %}selected{% endif %}>{{ display }}</option>
+        {% endfor %}
+    </select>
+
+    <input type="hidden" name="sort" id="sortType" value="{{ sort|default:'new' }}">
+
+    <div style="display: flex; gap: 0.7rem; background-color: #a67b5b; border-radius: 8px; padding: 0.25rem 0.5rem;">
+        <button type="submit" onclick="document.getElementById('sortType').value='new'"
+            style="border: none; background: none; color: #f4ede6; font-weight: 700; font-size: 1rem; padding: 0.3rem 0.8rem; border-radius: 6px;
+                {% if sort == 'new' or not sort %}background-color: #7b5e57;{% else %}opacity: 0.7;{% endif %} cursor: pointer;">
+            New
+        </button>
+        <button type="submit" onclick="document.getElementById('sortType').value='best'"
+            style="border: none; background: none; color: #f4ede6; font-weight: 700; font-size: 1rem; padding: 0.3rem 0.8rem; border-radius: 6px;
+                {% if sort == 'best' %}background-color: #7b5e57;{% else %}opacity: 0.7;{% endif %} cursor: pointer;">
+            Best
+        </button>
+    </div>
+</form>
+
 
     <ul>
         {% for question in questions %}
             <li>
-                <a href="{% url 'question_detail' question.id %}">{{ question.text }}</a>
+                <a href="{% url 'question_detail' question.id %}">
+    {{ question.text }} ({{ question.answers.count }})
+                </a>
+
                 <div class="question-meta">
                     By <strong>{{ question.user.username }}</strong> | {{ question.created_at|date:"M d, Y" }}
                 </div>
