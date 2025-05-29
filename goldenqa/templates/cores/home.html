@@ -69,7 +69,7 @@
     padding: 0 1rem;
   }
 
-  /* Form bölümü */
+
   .form-section {
     background: #fef9f4;
     border-radius: 12px;
@@ -265,12 +265,9 @@
   <a href="{% url 'question_page' %}">All Questions</a>
 </div>
 
-{% if not selected_tag %}
-<div class="welcome-section">
-    <h1>⭐ Welcome to IDontEvenKnow</h1>
-    <p>IDontEvenKnow is a platform where you can ask anything you're curious about and get quick answers from the community. You can ask your question below or explore the categories to discover interesting questions.</p>
-</div>
-{% endif %}
+
+
+
 
 <div class="container">
     {% if not selected_tag %}
