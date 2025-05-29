@@ -170,11 +170,11 @@
         </div>
         <div class="vote-container">
             <button class="vote-btn {% if a.id in user_upvotes %}upvoted{% endif %}"
-                    onclick="voteAnswer({{ a.id }}, 'upvote')" title="Upvote">⬆️</button>
+                    onclick="voteAnswer({{ a.id }}, 'upvote')" title="Upvote">🟢⬆️</button>
             <span id="upvotes-{{ a.id }}">{{ a.upvotes.count }}</span>
 
             <button class="vote-btn {% if a.id in user_downvotes %}downvoted{% endif %}"
-                    onclick="voteAnswer({{ a.id }}, 'downvote')" title="Downvote">⬇️</button>
+                    onclick="voteAnswer({{ a.id }}, 'downvote')" title="Downvote">🔴⬇️</button>
             <span id="downvotes-{{ a.id }}">{{ a.downvotes.count }}</span>
 
             <span id="score-{{ a.id }}" class="vote-score">Score: {{ a.vote_score }}</span>
